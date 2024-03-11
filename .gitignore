@@ -396,3 +396,9 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+#expo
+.expo/
+dist/
+web-build/
+.vscode/
