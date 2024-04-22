@@ -1,0 +1,29 @@
+{
+    "project_info": {
+      "project_number": "289188637679",
+      "project_id": "trobeautrovrai",
+      "storage_bucket": "trobeautrovrai.appspot.com"
+    },
+    "client": [
+      {
+        "client_info": {
+          "mobilesdk_app_id": "1:289188637679:android:70704b9c0d653d750fa41a",
+          "android_client_info": {
+            "package_name": "com.trobeautrovrai"
+          }
+        },
+        "oauth_client": [],
+        "api_key": [
+          {
+            "current_key": "AIzaSyBsNRNbfjf1UCKEz1oQTLeYvEWSgZlllAs"
+          }
+        ],
+        "services": {
+          "appinvite_service": {
+            "other_platform_oauth_client": []
+          }
+        }
+      }
+    ],
+    "configuration_version": "1"
+  }
