@@ -34,7 +34,7 @@ export default function AddPostScreen() {
         const querySnapshot = await getDocs(collection(db, "Category"));
         querySnapshot.forEach((doc) => {
             console.log("Docs:", doc.data());
-            setCategoryList([...categoryList, doc.data()]);
+            setCategoryList(categoryList => [...categoryList, doc.data()]);
         });
     }
 
@@ -76,7 +76,7 @@ export default function AddPostScreen() {
                 const docRef = await addDoc(collection(db, "UserPost"), value);
                 if (docRef.id) {
                     setLoading(false);
-                    Alert.alert('Post Added Successfully');
+                    Alert.alert('Post enrégistré');
                     //ToastAndroid.show('Post Added Successfully', ToastAndroid.SHORT)
                 }
             }).catch((error) => {
@@ -90,13 +90,13 @@ export default function AddPostScreen() {
                 <Text className="text-[27px] font-bold">Ajouter un post</Text>
                 <Text className="text-[18px] text-gray-500 mb-7">Ajouter et commencer à vendre</Text>
                 <Formik
-                    initialValues={{ name: '', description: '', category: '', address: '', price: '', userName: '', userEmail: '', userImage: '', createdAt: Date.now()}}
+                    initialValues={{ name: '', description: '', category: '', address: '', price: '', userName: '', userEmail: '', userImage: '', createdAt: Date.now() }}
                     onSubmit={value => onSubmitMethod(value)}
                     validate={(values) => {
                         const errors = {}
                         if (!values.name) {
-                            ToastAndroid.show('Name is Required', ToastAndroid.SHORT)
-                            errors.name = 'Name is Required'
+                            // ToastAndroid.show('Name is Required', ToastAndroid.SHORT)
+                            // errors.name = 'Name is Required'
                         }
                         return errors;
                     }}

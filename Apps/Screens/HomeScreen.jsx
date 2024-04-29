@@ -36,7 +36,7 @@ export default function HomeScreen() {
         const querySnapshot = await getDocs(collection(db, "Category"));
         querySnapshot.forEach((doc) => {
             console.log("Docs:", doc.data());
-            setCategoryList([...categoryList, doc.data()]);
+            setCategoryList(categoryList => [... categoryList, doc.data()]);
         });
     }
 
@@ -46,18 +46,19 @@ export default function HomeScreen() {
         const querySnapshot = await getDocs(collection(db, "UserPost"), orderBy("createdAt", "desc"));
         querySnapshot.forEach((doc) => {
             console.log("Docs:", doc.data());
-            setlatestItemList([...latestItemList, doc.data()]);
+            setlatestItemList(latestItemList => [...latestItemList, doc.data()]);
         });
     }
 
     return (
-        <ScrollView className="py-8 px-6 mt-1 bg-white flex-1" nestedScrollEnabled={true}>
+        <ScrollView className="py-8 px-6 mt-1 bg-white flex-1">
             <Header>
             </Header>
             <Slider sliders={sliders}>
             </Slider>
             <Categories categoryList={categoryList}></Categories>
-            <LatestItemList latestItemList={latestItemList}></LatestItemList>
+            <LatestItemList latestItemList={latestItemList} 
+            heading={'Derniers posts'}></LatestItemList>
         </ScrollView>
     )
 }
