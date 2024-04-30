@@ -1,43 +1,85 @@
-import {Image, View, Text, Button, TouchableOpacity} from 'react-native';
+import { Image, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import React from 'react';
 import * as WebBrowser from "expo-web-browser";
 import { useOAuth } from "@clerk/clerk-expo";
 import { useWarmUpBrowser } from "../../hooks/useWarmUpBrowser";
 
-
 WebBrowser.maybeCompleteAuthSession();
-export default function LoginScreen() {
 
+const LoginScreen = () => {
     useWarmUpBrowser();
     const { startOAuthFlow } = useOAuth({ strategy: "oauth_google" });
 
-    const onPress = React.useCallback(async () => {
+    const onPress = async () => {
         try {
-          const { createdSessionId, signIn, signUp, setActive } =
-            await startOAuthFlow();
-     
-          if (createdSessionId) {
-            setActive({ session: createdSessionId });
-          } else {
-            // Use signIn or signUp for next steps such as MFA
-          }
+            const { createdSessionId, setActive } = await startOAuthFlow();
+            if (createdSessionId) {
+                setActive({ session: createdSessionId });
+            } else {
+            }
         } catch (err) {
-          console.error("OAuth error", err);
+            console.error("OAuth error", err);
         }
-      }, []);
+    };
 
     return (
-        <View>
-            <Text></Text>
-            <Image source={require('./../../assets/images/home1.jpg')} 
-                className="w-full h-[400px] object-cover"
+        <View style={styles.container}>
+            <Image
+                source={require('./../../assets/images/home1.jpg')}
+                style={styles.image}
             />
-            <View className="p-8 bg-white mt-[-20px] rounded-t-3xl shadow-md">
-                <Text className="text-[30px] font-bold justify-center text-center">LeVraiCoin</Text>
-                <TouchableOpacity onPress={onPress} className="p-3 bg-blue-500 rounded-full mt-20">
-                    <Text className="text-center text-white text-[18px] font-bold">Commencer !!!</Text>
+            <View style={styles.content}>
+                <Text style={styles.title}>LeVraiCoin</Text>
+                <TouchableOpacity onPress={onPress} style={styles.button}>
+                    <Text style={styles.buttonText}>Connectez-vous</Text>
                 </TouchableOpacity>
-            </View>  
+            </View>
         </View>
-    )
-}
+    );
+};
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+    },
+    image: {
+        width: '100%',
+        height: 400,
+        resizeMode: 'cover',
+    },
+    content: {
+        padding: 20,
+        backgroundColor: '#f0f0f0', // Light gray background
+        marginTop: 50,
+        borderTopLeftRadius: 30,
+        borderTopRightRadius: 30,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
+    title: {
+        fontSize: 36,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        marginBottom: 20,
+        color: '#333', // Dark gray text color
+    },
+    button: {
+        paddingVertical: 14,
+        backgroundColor: '#007BFF',
+        borderRadius: 10,
+    },
+    buttonText: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: 'white',
+        textAlign: 'center',
+    },
+});
+
+export default LoginScreen;

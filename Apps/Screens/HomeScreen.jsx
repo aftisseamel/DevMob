@@ -1,64 +1,87 @@
-import { View, Text, ScrollView } from 'react-native';
 import React, { useEffect, useState } from 'react';
+import { ScrollView, RefreshControl, StyleSheet } from 'react-native';
 import Header from '../Components/HomeScreen/Header';
 import Slider from '../Components/HomeScreen/Slider';
-import { getFirestore, collection, doc, setDoc, getDoc, getDocs, orderBy } from 'firebase/firestore';
+import { getFirestore, collection, getDocs, orderBy } from 'firebase/firestore';
 import Categories from '../Components/HomeScreen/Categories';
 import LatestItemList from '../Components/HomeScreen/LatestItemList';
-
 
 export default function HomeScreen() {
     const db = getFirestore();
     const [sliders, setSliders] = useState([]);
     const [categoryList, setCategoryList] = useState([]);
-    const [latestItemList, setlatestItemList] = useState([]);
+    const [latestItemList, setLatestItemList] = useState([]);
+    const [refreshing, setRefreshing] = useState(false);
 
     useEffect(() => {
         getSliders();
         getCategoryList();
         getLatestItemList();
-    }, [])
+    }, []);
 
-    // getSliders for home
-    const getSliders = async()=>{
-        setSliders([]);
-        const querySnapshot = await getDocs(collection(db, "Sliders"));
-        querySnapshot.forEach((doc) => {
-            console.log(doc.id, " => ", doc.data());
-            setSliders(sliders => [...sliders, doc.data()]);
-        });
+    const onRefresh = async () => {
+        setRefreshing(true);
+        try {
+            await Promise.all([getSliders(), getCategoryList(), getLatestItemList()]);
+        } catch (error) {
+            console.error('Error refreshing data:', error);
+        } finally {
+            setRefreshing(false);
+        }
+    };
 
-    }
+    const getSliders = async () => {
+        try {
+            const querySnapshot = await getDocs(collection(db, "Sliders"));
+            const slidersData = querySnapshot.docs.map(doc => doc.data());
+            setSliders(slidersData);
+        } catch (error) {
+            console.error("Error fetching sliders:", error);
+        }
+    };
 
-    //Categorie
     const getCategoryList = async () => {
-        setCategoryList([]);
-        const querySnapshot = await getDocs(collection(db, "Category"));
-        querySnapshot.forEach((doc) => {
-            console.log("Docs:", doc.data());
-            setCategoryList(categoryList => [... categoryList, doc.data()]);
-        });
-    }
+        try {
+            const querySnapshot = await getDocs(collection(db, "Category"));
+            const categoryData = querySnapshot.docs.map(doc => doc.data());
+            setCategoryList(categoryData);
+        } catch (error) {
+            console.error("Error fetching categories:", error);
+        }
+    };
 
-    //Latest Item List
-    const getLatestItemList=async()=>{
-        setlatestItemList([]);
-        const querySnapshot = await getDocs(collection(db, "UserPost"), orderBy("createdAt", "desc"));
-        querySnapshot.forEach((doc) => {
-            console.log("Docs:", doc.data());
-            setlatestItemList(latestItemList => [...latestItemList, doc.data()]);
-        });
-    }
+    const getLatestItemList = async () => {
+        try {
+            const querySnapshot = await getDocs(collection(db, "UserPost"), orderBy("createdAt", "desc"));
+            const latestItemListData = querySnapshot.docs.map(doc => doc.data());
+            setLatestItemList(latestItemListData);
+        } catch (error) {
+            console.error("Error fetching latest items:", error);
+        }
+    };
 
     return (
-        <ScrollView className="py-8 px-6 mt-1 bg-white flex-1">
-            <Header>
-            </Header>
-            <Slider sliders={sliders}>
-            </Slider>
-            <Categories categoryList={categoryList}></Categories>
-            <LatestItemList latestItemList={latestItemList} 
-            heading={'Derniers posts'}></LatestItemList>
+        <ScrollView
+            style={styles.home}
+            refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }>
+            <Header />
+            <Slider sliders={sliders} />
+            <Categories categoryList={categoryList} />
+            <LatestItemList
+                latestItemList={latestItemList}
+                heading={'Derniers posts'} />
         </ScrollView>
-    )
+    );
 }
+
+const styles = StyleSheet.create({
+    home: {
+        flex: 1,
+        backgroundColor: '#F5EFEF',
+        paddingTop: 8,
+        paddingHorizontal: 6,
+        marginTop: 40,
+    },
+});

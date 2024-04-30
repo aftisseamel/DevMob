@@ -58,7 +58,7 @@ export default function ProfileScreen() {
                         onPress={()=>onMenuPress(item)}
                         className="w-[60px] h-[60px] rounded-full"
                         />}
-                        <Text className="text-[12px] mt-2 text-blue-200">{item?.name}</Text>
+                        <Text className="text-[12px] mt-2 text-red-200">{item?.name}</Text>
                     </TouchableOpacity>
                 )}
             />

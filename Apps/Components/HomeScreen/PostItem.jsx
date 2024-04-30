@@ -21,7 +21,7 @@ export default function PostItem({ item}) {
                 <Text className="text*blue-500 bg-blue-200 mt-1 p-1 
                         rounded-full px-2 text-[12px] w-[80px] text-center">{item.category}</Text>
                 <Text className="font-bold text-[15px] mt-2">{item.name}</Text>
-                <Text className="font-bold text-[20px] text-blue-500">{item.price} £</Text>
+                <Text className="font-bold text-[20px] text-blue-500">{item.price}€</Text>
             </View>
         </TouchableOpacity>
     )
