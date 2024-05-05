@@ -36,7 +36,7 @@ export default function ProductDetail({navigation}) {
      */
     const shareProduct=async()=>{
         const content={
-            message:product?.title+"\n"+product?.desc,
+            message:product?.name+"\n"+product?.desc,
 
         }
        Share.share(content).then(resp=>{
@@ -47,19 +47,19 @@ export default function ProductDetail({navigation}) {
     }
 
     const sendEmailMessage=()=>{
-        const subject='Regarding '+product.title;
-        const body="Hi "+product.userName+"\n"+"I am intrested in this product";
+        const subject='Regarding '+product.name;
+        const body="Salut "+product.userName+"\n"+"Je suis interessé par votre produit";
         Linking.openURL('mailto:'+product.userEmail+"?subject="+subject+"&body="+body);
     }
 
     const deleteUserPost=()=>{
-        Alert.alert('Do you want to Delete?',"Are you want to Delete this Post?",[
+        Alert.alert('Voulez vous supprimer ?',"Confirmez vous la suppression ?",[
            {
-            text:'Yes',
+            text:'Oui',
             onPress:()=>deleteFromFirestore()
            },
            {
-            text: 'Cancel',
+            text: 'Annuler',
             onPress: () => console.log('Cancel Pressed'),
             style: 'cancel',
           }, 
@@ -67,7 +67,7 @@ export default function ProductDetail({navigation}) {
     }
     const deleteFromFirestore=async()=>{
         console.log('Deleted');
-        const q=query(collection(db,'UserPost'),where('title','==',product.title))
+        const q=query(collection(db,'UserPost'),where('name','==',product.name))
         const snapshot=await getDocs(q);
         snapshot.forEach(doc=>{
             deleteDoc(doc.ref).then(resp=>{
@@ -83,14 +83,14 @@ export default function ProductDetail({navigation}) {
         />
 
         <View className="m-5">
-            <Text className="text-[24px] font-bold">{product?.title}</Text>
+            <Text className="text-[24px] font-bold">{product?.name}</Text>
             <View className="items-baseline">
             <Text className=" bg-blue-200 p-1 mt-2 px-2 rounded-full text-blue-500">
                 {product.category}
                 </Text>
                 </View>
             <Text className="mt-3 font-bold text-[20px]">Description</Text>
-            <Text className="text-[17px] text-gray-500">{product?.desc}</Text>
+            <Text className="text-[17px] text-gray-500">{product?.description}</Text>
         </View>
 
     {/* User Info  */}
