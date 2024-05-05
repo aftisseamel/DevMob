@@ -98,7 +98,7 @@ export default function AddPostScreen() {
                     validate={(values) => {
                         const errors = {}
                         if (!values.name) {
-                            errors.name = 'Name is Required';
+                            errors.name = 'Le titre est obligatoire';
                         }
                         return errors;
                     }}

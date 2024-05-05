@@ -107,13 +107,13 @@ export default function ProductDetail({navigation}) {
        {user?.primaryEmailAddress.emailAddress==product.userEmail?
          <TouchableOpacity
          onPress={()=>deleteUserPost()}
-         className=" z-40  bg-red-500 rounded-full  p-4 m-2">
+         className=" z-40  bg-red-500 rounded-full  p-4 m-8">
              <Text className="text-center text-white">Supprimer</Text>
          </TouchableOpacity>
          :
          <TouchableOpacity
          onPress={()=>sendEmailMessage()}
-         className=" z-40  bg-blue-500 rounded-full  p-4 m-2">
+         className=" z-40  bg-blue-500 rounded-full p-4 m-8">
              <Text className="text-center text-white">Contacter</Text>
          </TouchableOpacity>
         }
