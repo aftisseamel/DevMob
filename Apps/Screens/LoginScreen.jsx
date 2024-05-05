@@ -44,12 +44,12 @@ const styles = StyleSheet.create({
     },
     image: {
         width: '100%',
-        height: 400,
+        height: 500,
         resizeMode: 'cover',
     },
     content: {
         padding: 20,
-        backgroundColor: '#f0f0f0', // Light gray background
+        backgroundColor: '#f0f0f0',
         marginTop: 50,
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30,
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         textAlign: 'center',
         marginBottom: 20,
-        color: '#333', // Dark gray text color
+        color: '#333', 
     },
     button: {
         paddingVertical: 14,
