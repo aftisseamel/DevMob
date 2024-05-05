@@ -1,98 +1,124 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, Image, TouchableOpacity, ScrollView, Alert, Linking, Share } from 'react-native';
-import { useRoute, useNavigation } from '@react-navigation/native';
+import { View, Text, Image, ScrollView, Linking, Share, Alert } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { useNavigation, useRoute } from '@react-navigation/native'
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
 import { useUser } from '@clerk/clerk-expo';
-import { collection, query, getDocs, deleteDoc } from 'firebase/firestore';
-import { db } from '../../firebaseConfig';
+import { collection, deleteDoc, getDocs, getFirestore, query, where } from 'firebase/firestore';
+import { app } from '../../firebaseConfig';
 
-export default function ProductDetails() {
-    const { params } = useRoute();
-    const navigation = useNavigation();
-    const { user } = useUser();
-    const [product, setProduct] = useState(params?.product || {});
+export default function ProductDetail({navigation}) {
+    const {params}=useRoute();
+    const [product,setProduct]=useState([]);
+    const {user}=useUser();
+    const db=getFirestore(app);
+    const nav=useNavigation();
+    useEffect(()=>{
+        params&&setProduct(params.product);
+        shareButton();
+    },[params,navigation])
 
-    useEffect(() => {
-        if (params?.product) {
-            setProduct(params.product);
-        }
-    }, [params]);
-
-    const shareProduct = () => {
-        const content = {
-            message: `${product?.name}\n${product?.description}\n${product?.price}€`
-        };
-        Share.share(content)
-            .then(res => console.log(res))
-            .catch(error => console.log(error));
-    };
-
-    const deleteUserPost = () => {
-        Alert.alert('Supprimer le post', 'Voulez-vous vraiment supprimer ce post?', [
-            {
-                text: 'Oui',
-                onPress: deleteFromFirestore
-            },
-            {
-                text: 'Annuler',
-                onPress: () => console.log('Annuler'),
-                style: 'cancel'
-            }
-        ]);
-    };
-
-    const deleteFromFirestore = async () => {
-        const q = query(collection(db, 'UserPost'), where('name', '==', product?.name));
-        const snapshot = await getDocs(q);
-        snapshot.forEach(doc => {
-            deleteDoc(doc.ref)
-                .then(() => {
-                    console.log('Document successfully deleted!');
-                    navigation.goBack();
-                })
-                .catch(error => {
-                    console.error('Error removing document: ', error);
-                });
-        });
-    };
-
-    const sendEmailMessage = () => {
-        const subject = 'Hello';
-        const body = 'Hello, I am interested in your product. Please provide me more details. Thanks';
-        const encodedSubject = encodeURIComponent(subject);
-        const encodedBody = encodeURIComponent(body);
-        Linking.openURL(`mailto:${product?.userEmail}?subject=${encodedSubject}&body=${encodedBody}`);
-        console.log("j'ai cliqué sur : Envoyer un Message");
+    const shareButton=()=>{
+        navigation.setOptions({
+            headerRight: () => (
+                <Ionicons name="share-social-sharp" size={24} 
+                onPress={()=>shareProduct()}
+                color="white"
+                style={{marginRight:15}} />
+                
+            ),
+          });
+      
     }
 
-    return (
-        <ScrollView style={{ backgroundColor: 'white' }}>
-            <Image source={{ uri: product?.image }} style={{ height: 320, width: '100%' }} />
-            <View style={{ padding: 20 }}>
-                <Text style={{ fontWeight: 'bold', fontSize: 24 }}>{product?.name}</Text>
-                <View style={{ flexDirection: 'row', alignItems: 'baseline' }}>
-                    <Text style={{ padding: 10, paddingHorizontal: 20, marginTop: 20, backgroundColor: 'blue', borderRadius: 50, color: 'white' }}>{product?.category}</Text>
+    /**
+     * Used to Share Product
+     */
+    const shareProduct=async()=>{
+        const content={
+            message:product?.title+"\n"+product?.desc,
+
+        }
+       Share.share(content).then(resp=>{
+        console.log(resp);
+       },(error)=>{
+        console.log(error);
+       })
+    }
+
+    const sendEmailMessage=()=>{
+        const subject='Regarding '+product.title;
+        const body="Hi "+product.userName+"\n"+"I am intrested in this product";
+        Linking.openURL('mailto:'+product.userEmail+"?subject="+subject+"&body="+body);
+    }
+
+    const deleteUserPost=()=>{
+        Alert.alert('Do you want to Delete?',"Are you want to Delete this Post?",[
+           {
+            text:'Yes',
+            onPress:()=>deleteFromFirestore()
+           },
+           {
+            text: 'Cancel',
+            onPress: () => console.log('Cancel Pressed'),
+            style: 'cancel',
+          }, 
+        ])
+    }
+    const deleteFromFirestore=async()=>{
+        console.log('Deleted');
+        const q=query(collection(db,'UserPost'),where('title','==',product.title))
+        const snapshot=await getDocs(q);
+        snapshot.forEach(doc=>{
+            deleteDoc(doc.ref).then(resp=>{
+                console.log("Deleted the Doc...");
+                nav.goBack();
+            })
+        })
+    }
+  return (
+    <ScrollView className="bg-white">
+        <Image source={{uri:product.image}}
+            className="h-[320px] w-full"
+        />
+
+        <View className="m-5">
+            <Text className="text-[24px] font-bold">{product?.title}</Text>
+            <View className="items-baseline">
+            <Text className=" bg-blue-200 p-1 mt-2 px-2 rounded-full text-blue-500">
+                {product.category}
+                </Text>
                 </View>
-                <Text style={{ marginTop: 20, fontWeight: 'bold', fontSize: 20 }}>Description</Text>
-                <Text style={{ fontSize: 17, color: '#888' }}>{product?.description}</Text>
+            <Text className="mt-3 font-bold text-[20px]">Description</Text>
+            <Text className="text-[17px] text-gray-500">{product?.desc}</Text>
+        </View>
+
+    {/* User Info  */}
+        <View className="p-3 flex flex-row items-center gap-3 bg-blue-100  border-gray-400">
+            <Image source={{uri:product.userImage}}
+                className="w-12 h-12 rounded-full"
+            />
+            <View >
+                <Text className="font-bold text-[18px]">{product.userName}</Text>
+                <Text className="text-gray-500">{product.userEmail}</Text>
             </View>
-            <View style={{ padding: 20, flexDirection: 'row', alignItems: 'center', backgroundColor: 'blue' }}>
-                <Image source={{ uri: product?.userImage }} style={{ width: 60, height: 60, borderRadius: 30 }} />
-                <View style={{ marginLeft: 20 }}>
-                    <Text style={{ fontWeight: 'bold', fontSize: 18, color: 'white' }}>{product?.userName}</Text>
-                    <Text style={{ color: 'white' }}>{product?.userEmail}</Text>
-                </View>
-            </View>
-            {user?.primaryEmailAddress?.emailAddress === product?.userEmail ?
-                <TouchableOpacity style={{ zIndex: 40, backgroundColor: 'red', borderRadius: 50, padding: 10, margin: 10 }} onPress={deleteUserPost}>
-                    <Text style={{ textAlign: 'center', color: 'white' }}>Supprimer ce post</Text>
-                </TouchableOpacity>
-                :
-                <TouchableOpacity style={{ zIndex: 40, backgroundColor: 'blue', borderRadius: 50, padding: 10, margin: 10 }} onPress={sendEmailMessage} >
-                    <Text style={{ textAlign: 'center', color: 'white' }}>Envoyer un Message</Text>
-                    <Text> </Text>
-                </TouchableOpacity>
-            }
-         </ScrollView>
-    );
+        </View>
+       
+       {user?.primaryEmailAddress.emailAddress==product.userEmail?
+         <TouchableOpacity
+         onPress={()=>deleteUserPost()}
+         className=" z-40  bg-red-500 rounded-full  p-4 m-2">
+             <Text className="text-center text-white">Supprimer</Text>
+         </TouchableOpacity>
+         :
+         <TouchableOpacity
+         onPress={()=>sendEmailMessage()}
+         className=" z-40  bg-blue-500 rounded-full  p-4 m-2">
+             <Text className="text-center text-white">Contacter</Text>
+         </TouchableOpacity>
+        }
+       
+    
+    </ScrollView>
+  )
 }
