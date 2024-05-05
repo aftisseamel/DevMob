@@ -37,8 +37,8 @@ export default function ProductDetail({navigation}) {
     const shareProduct=async()=>{
         const content={
             message:product?.name+"\n"+product?.desc,
-
         }
+
        Share.share(content).then(resp=>{
         console.log(resp);
        },(error)=>{
@@ -47,7 +47,7 @@ export default function ProductDetail({navigation}) {
     }
 
     const sendEmailMessage=()=>{
-        const subject='Regarding '+product.name;
+        const subject='Votre article sur le LeVraiCoin'+product.name;
         const body="Salut "+product.userName+"\n"+"Je suis interessé par votre produit";
         Linking.openURL('mailto:'+product.userEmail+"?subject="+subject+"&body="+body);
     }

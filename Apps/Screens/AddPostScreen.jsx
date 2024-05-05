@@ -90,12 +90,15 @@ export default function AddPostScreen() {
                 <Text className="text-[18px] text-gray-500 mb-7">Ajouter et commencer à vendre</Text>
                 <Formik
                     initialValues={{ name: '', description: '', category: '', address: '', price: '', userName: '', userEmail: '', userImage: '', createdAt: Date.now() }}
-                    onSubmit={value => onSubmitMethod(value)}
+                    onSubmit={(values, { resetForm }) => {
+                        onSubmitMethod(values);
+                        resetForm();
+                        setImage(null); // Efface l'image sélectionnée
+                    }}
                     validate={(values) => {
                         const errors = {}
                         if (!values.name) {
-                            // ToastAndroid.show('Name is Required', ToastAndroid.SHORT)
-                            // errors.name = 'Name is Required'
+                            errors.name = 'Name is Required';
                         }
                         return errors;
                     }}
@@ -164,6 +167,7 @@ export default function AddPostScreen() {
                         </View>
                     )}
                 </Formik>
+
             </ScrollView>
         </KeyboardAvoidingView>
     )
